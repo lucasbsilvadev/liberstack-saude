@@ -1,22 +1,6 @@
-services:
-  liberstack-db:
-    image: postgres:16-alpine
-    container_name: liberstack-postgres-prod
-    restart: always
-    environment:
-      POSTGRES_USER: liber_admin
-      POSTGRES_PASSWORD: ${DB_PASSWORD}  
-      POSTGRES_DB: liberstack_prod_db
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-    networks:
-      - liberstack-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U liber_admin -d liberstack_prod_db"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+version: "3.8"
 
+services:
   liberstack-api:
     build:
       context: ./backend
@@ -25,18 +9,10 @@ services:
     restart: always
     ports:
       - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://liber_admin:${DB_PASSWORD}@liberstack-db:5432/liberstack_prod_db
-      - ENV=production
-    depends_on:
-      liberstack-db:
-        condition: service_healthy
+    env_file:
+      - .env  
     networks:
       - liberstack-network
-
-volumes:
-  pg_data:
-    driver: local
 
 networks:
   liberstack-network:

@@ -2,6 +2,7 @@ import asyncio
 import asyncpg
 import logging
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+from asyncpg import exceptions as asyncpg_errors
 from app.config.settings import settings
 
 logger = logging.getLogger("liberstack")
@@ -10,30 +11,42 @@ class GerenciadorDB:
     def __init__(self):
         self._pool = None
 
+    @retry(
+        stop=stop_after_attempt(5),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        retry=retry_if_exception_type((
+            asyncpg_errors.InterfaceError,
+            ConnectionRefusedError,
+            OSError
+        )),
+        reraise=True
+    )
     async def connect(self):
-        if not self._pool:
-            try:
-                # criação da conexão assíncrona 
-                self._pool = await asyncpg.create_pool(
-                    dsn=f"postgresql://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}",
-                    min_size=5,
-                    max_size=20,
-                    ssl="require",
-                    command_timeout=10.0,
-                    server_settings={
-                        "statement_timeout": "5000",
-                        "idle_in_transaction_session_timeout": "10000"
-                    }
-                )
-                logger.info("Pool de conexões Azure Database estabelecido.")
-                warmup_conns = [self._pool.acquire() for _ in range(3)]
-                conns = await asyncio.gather(*warmup_conns)
-                for conn in conns:
-                    await self._pool.release(conn)
+        if self._pool:
+            return
 
-            except Exception as e:
-                logger.critical(f"falha fatal ao criar o pool de conexões Azure: {e}")
-                raise e
+      
+        logger.info("tentando estabelecer o pool de conexões com o Azure Database...")
+        
+        self._pool = await asyncpg.create_pool(
+            user=settings.DB_USER,
+            password=settings.DB_PASSWORD,
+            host=settings.DB_HOST,
+            port=int(settings.DB_PORT),
+            database=settings.DB_NAME,
+            ssl="require",  
+            command_timeout=10.0,
+            server_settings={
+                "statement_timeout": "5000",
+                "idle_in_transaction_session_timeout": "10000"
+            }
+        )
+        logger.info("pool de conexões Azure Database estabelecido com sucesso.")
+        
+        warmup_conns = [self._pool.acquire() for _ in range(3)]
+        conns = await asyncio.gather(*warmup_conns)
+        for conn in conns:
+            await self._pool.release(conn)
 
     async def disconnect(self):
         if self._pool:
@@ -49,16 +62,19 @@ class GerenciadorDB:
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=1, max=4),
-        retry=retry_if_exception_type((asyncpg.OperationalError, asyncpg.PostgresConnectionError)),
+        retry=retry_if_exception_type((
+            asyncpg_errors.InterfaceError, 
+            asyncpg_errors.PostgresError,   
+            OSError                        
+        )),
         reraise=True
     )
-    async def execucao_segura(self, query: str, *args):
-        """ evita sobrecarga e controla sessões de conexão"""
+    async def execute_safely(self, query: str, *args):
         pool = self.get_pool()
         async with pool.acquire() as connection:
             return await connection.fetch(query, *args)
 
-    def get_estatisticas_pool(self) -> dict:
+    def get_pool_stats(self) -> dict:
         if not self._pool:
             return {"status": "uninitialized"}
             
@@ -72,4 +88,4 @@ class GerenciadorDB:
             "used_connections": total - idle
         }
 
-gerenciador_db = GerenciadorDB()
+db_manager = GerenciadorDB()
