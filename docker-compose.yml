@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   liberstack-db:
     image: postgres:16-alpine
@@ -7,13 +5,17 @@ services:
     restart: always
     environment:
       POSTGRES_USER: liber_admin
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}  
       POSTGRES_DB: liberstack_prod_db
     volumes:
       - pg_data:/var/lib/postgresql/data
     networks:
       - liberstack-network
- 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U liber_admin -d liberstack_prod_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   liberstack-api:
     build:
@@ -25,9 +27,10 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql://liber_admin:${DB_PASSWORD}@liberstack-db:5432/liberstack_prod_db
-      - MERCADO_LIVRE_API_KEY=${ML_API_KEY}
+      - ENV=production
     depends_on:
-      - liberstack-db
+      liberstack-db:
+        condition: service_healthy
     networks:
       - liberstack-network
 

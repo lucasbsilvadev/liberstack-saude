@@ -12,6 +12,6 @@ class Settings(BaseSettings):
 
     MERCADO_LIVRE_API_KEY: str | None = Field(default=None)
 
-    model_config = SettingsConfigDict(env_file="../.env" env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(env_file="../.env", env_file_encoding="utf-8", extra="ignore")
 
     settings = Settings()
