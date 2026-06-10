@@ -9,7 +9,7 @@ from slowapi.errors import RateLimitExceeded
 import asyncpg
 
 from app.config.settings import settings
-from app.database.connection import db_manager
+from app.database.connection import gerenciador_db
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("liberstack")
@@ -40,10 +40,10 @@ async def startup_event():
     logger.info("iniciando ciclo de boot da aplicação...")
     try:
         # inicialização do pool de conexões
-        await db_manager.connect()
+        await gerenciador_db.connect()
         
         # fail fast para evitar subir contêineres "zumbi"
-        await db_manager.execute_safely("SELECT 1")
+        await gerenciador_db.execucao_segura("SELECT 1")
         logger.info("verificação de sanidade do banco concluída com sucesso. sistema pronto para tráfego.")
     except Exception as e:
         logger.critical(f"falha crítica na inicialização: banco de dados inacessível: {e}")
@@ -51,7 +51,7 @@ async def startup_event():
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    await db_manager.disconnect()
+    await gerenciador_db.disconnect()
 
 @app.middleware("http")
 async def validation_exception_middleware(request: Request, call_next):
@@ -71,7 +71,7 @@ async def validation_exception_middleware(request: Request, call_next):
 @app.get("/v1/saude", tags=["Monitoramento"])
 @limiter.limit("10/minute")
 async def health_check(request: Request):
-    db_stats = db_manager.get_pool_stats()
+    db_stats = gerenciador_db.get_pool_stats()
     
    # se o pool estiver sem conexões, avisa o orquestrador 
     status_code = status.HTTP_200_OK

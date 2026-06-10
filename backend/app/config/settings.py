@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASSWORD: str
     
-    INFOSAUDE_API_URL: str
+    DEMAS_API_URL: str = Field(default="https://api.demas.saude.gov.br")
 
     model_config = {
         "extra": "ignore"

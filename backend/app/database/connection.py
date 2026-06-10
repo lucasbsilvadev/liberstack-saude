@@ -1,5 +1,6 @@
 import asyncio
 import asyncpg
+import ssl
 import logging
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 from asyncpg import exceptions as asyncpg_errors
@@ -24,17 +25,22 @@ class GerenciadorDB:
     async def connect(self):
         if self._pool:
             return
-
       
         logger.info("tentando estabelecer o pool de conexões com o Azure Database...")
         
+        # contexto ssl
+
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+
         self._pool = await asyncpg.create_pool(
             user=settings.DB_USER,
             password=settings.DB_PASSWORD,
             host=settings.DB_HOST,
             port=int(settings.DB_PORT),
             database=settings.DB_NAME,
-            ssl="require",  
+            ssl=ctx,  
             command_timeout=10.0,
             server_settings={
                 "statement_timeout": "5000",
@@ -69,7 +75,7 @@ class GerenciadorDB:
         )),
         reraise=True
     )
-    async def execute_safely(self, query: str, *args):
+    async def execucao_segura(self, query: str, *args):
         pool = self.get_pool()
         async with pool.acquire() as connection:
             return await connection.fetch(query, *args)
@@ -88,4 +94,4 @@ class GerenciadorDB:
             "used_connections": total - idle
         }
 
-db_manager = GerenciadorDB()
+gerenciador_db = GerenciadorDB()
