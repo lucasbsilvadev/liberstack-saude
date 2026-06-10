@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  liberstack-db:
+    image: postgres:16-alpine
+    container_name: liberstack-postgres-prod
+    restart: always
+    environment:
+      POSTGRES_USER: liber_admin
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: liberstack_prod_db
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - liberstack-network
+ 
+
+  liberstack-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: liberstack-fastapi-prod
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://liber_admin:${DB_PASSWORD}@liberstack-db:5432/liberstack_prod_db
+      - MERCADO_LIVRE_API_KEY=${ML_API_KEY}
+    depends_on:
+      - liberstack-db
+    networks:
+      - liberstack-network
+
+volumes:
+  pg_data:
+    driver: local
+
+networks:
+  liberstack-network:
+    driver: bridge
