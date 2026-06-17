@@ -5,12 +5,6 @@ from config.settings import settings  # Ajuste conforme seu arquivo de configura
 
 @pytest.mark.asyncio
 async def test_pipeline_etl_real_no_database():
-    """
-    Teste de Integração E2E: Executa o Worker real coletando dados 
-    direto da API do DF e garante a persistência no banco do Docker.
-    """
-    # 1. Executa o script principal do Worker (ele vai buscar da API e tentar salvar)
-  
     await rodar_worker_real()
     
     # conexão com DB
