@@ -285,7 +285,7 @@ class ETLSaudeIndigenaWorker:
             await self.pipeline_saneamento()
             await self.pipeline_agua()
             await self.pipeline_gestacional()
-            logger.info("carga completa executada (pipeline gestacional desabilitado para debug)")
+            logger.info("carga completa executada.")
         except Exception as e:
             logger.error(f"erro na execucao dos pipelines: {e}")
         finally:
