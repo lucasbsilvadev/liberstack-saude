@@ -1,4 +1,4 @@
-# Liberstack Saúde 🏥
+# liberstack saúde
 
 Primeiro projeto da organização Liberstack. Uma solução de software desenvolvida em Python para otimizar a divulgação de dados na área da saúde pública.
 
