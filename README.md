@@ -1,6 +1,6 @@
 # Liberstack Saúde 🏥
 
-Primeiro projeto da organização Liberstack. Uma solução de software desenvolvida em Python para otimizar processos na área de saúde.
+Primeiro projeto da organização Liberstack. Uma solução de software desenvolvida em Python para otimizar a divulgação de dados na área da saúde pública.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-97.7%25-blue)](https://www.python.org/)
@@ -8,23 +8,24 @@ Primeiro projeto da organização Liberstack. Uma solução de software desenvol
 
 ---
 
-## 📋 Sobre
+##  Sobre
 
 O **Liberstack Saúde** é o projeto inaugural da organização Liberstack, desenvolvido com o objetivo de melhorar a eficiência e qualidade dos serviços na área de saúde através de tecnologia moderna e acessível.
 
-## 🚀 Funcionalidades
+##  Funcionalidades
 
-- [Adicione as funcionalidades principais do seu projeto aqui]
-- Arquitetura robusta baseada em Python
-- Containerização com Docker para facilitar deployment
-- Código limpo e bem documentado
+- Nosso sistema consome a API pública do DEMAS para extrair dados, em seguida validando, tratando e estamos trabalhando para integrar com um painel interativo que permita ao público o acompanhamento dos dados de saúde pública.
+- Arquitetura SOA baseada em Python
+- Containerização com Docker
+- Atualmente hospedado numa VM azure com Azure Database for PostgreSQL Flexible Server
 
-## 💻 Tecnologias Utilizadas
+
+##  Tecnologias Utilizadas
 
 - **Python** (97.7%) - Linguagem principal do projeto
 - **Docker** (2.3%) - Containerização e orquestração
 
-## 🛠️ Pré-requisitos
+## Pré-requisitos
 
 Antes de começar, certifique-se de ter instalado:
 
@@ -33,7 +34,7 @@ Antes de começar, certifique-se de ter instalado:
 - pip (gerenciador de pacotes Python)
 - Git
 
-## 📦 Instalação
+##  Instalação
 
 ### Opção 1: Instalação Local
 
@@ -72,7 +73,7 @@ docker build -t liberstack-saude .
 docker run -it liberstack-saude
 ```
 
-## 🚀 Como Usar
+##  Como Usar
 
 [Adicione instruções sobre como usar o projeto aqui]
 
@@ -81,7 +82,7 @@ docker run -it liberstack-saude
 python main.py
 ```
 
-## 📁 Estrutura do Projeto
+##  Estrutura do Projeto
 
 ```
 liberstack-saude/
@@ -94,7 +95,7 @@ liberstack-saude/
 └── LICENSE                # Licença do projeto
 ```
 
-## 🧪 Testes
+##  Testes
 
 Para executar os testes:
 
@@ -102,7 +103,7 @@ Para executar os testes:
 pytest
 ```
 
-## 🤝 Contribuindo
+##  Contribuindo
 
 Contribuições são bem-vindas! Por favor, siga os passos abaixo:
 
@@ -125,11 +126,11 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 
 ## 👤 Autor
 
-**Lucas Silva**
+**Lucas dos Reis Barbosa da Silva**
 
 - GitHub: [@lucasbsilvadev](https://github.com/lucasbsilvadev)
 
-## 🙌 Suporte
+##  Suporte
 
 Se você encontrar algum problema ou tiver sugestões, abra uma [issue](https://github.com/lucasbsilvadev/liberstack-saude/issues).
 
@@ -142,7 +143,7 @@ Se você encontrar algum problema ou tiver sugestões, abra uma [issue](https://
 
 <div align="center">
 
-**Feito com ❤️ pela Liberstack**
+**Feito com zelo pela liberstack**
 
 [⬆ Voltar ao topo](#liberstack-saúde-)
 
